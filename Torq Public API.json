@@ -1,0 +1,1802 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "contact" : {
+      "email" : "support@torq.io",
+      "name" : "torq.io",
+      "url" : "https://torq.io"
+    },
+    "title" : "Torq Public API",
+    "version" : "1.0.1alpha-18931dev"
+  },
+  "externalDocs" : {
+    "description" : "Torq Documentation",
+    "url" : "https://docs.torq.io"
+  },
+  "servers" : [ {
+    "url" : "https://api.torq.io/public"
+  } ],
+  "tags" : [ {
+    "name" : "ActivityLogs"
+  }, {
+    "name" : "AuditLogs"
+  }, {
+    "name" : "Secrets"
+  }, {
+    "name" : "Users"
+  }, {
+    "name" : "Variables"
+  }, {
+    "name" : "Workflows"
+  } ],
+  "paths" : {
+    "/v1alpha/activity_logs" : {
+      "get" : {
+        "description" : "The activity log endpoint enables you to retrieve activity log entries from Torq. The logs are retrieved for the account on which the API key used for authenticating the request was created.\nActivity log entries are created for workflow runs, single-step executions, and when an event is received but doesn't trigger a workflow.",
+        "operationId" : "listActivityLogs",
+        "parameters" : [ {
+          "description" : "Will retrieve activity log entries created after this [timestamp](https://docs.torq.io/torq-api/api-introduction#datetime). This parameter is optional. If empty, will retrieve all log entries from the previous 24 hours until the end timestamp. If neither a start or end timestamp is provided, will pull all log entries created in the last 24 hours. Timestamps are in RFC 3339 format, for example, 2022-03-09T08:40:18.490771179Z.",
+          "in" : "query",
+          "name" : "start_time",
+          "schema" : {
+            "format" : "date-time",
+            "type" : "string"
+          }
+        }, {
+          "description" : "Will retrieve activity log entries created before this [timestamp](https://docs.torq.io/torq-api/api-introduction#datetime). This parameter is optional. If empty, will retrieve all log entries from the start timestamp until now. If both the start or end timestamp are empty, will pull all log entries created in the last 24 hours. Timestamps are in RFC 3339 format, for example, 2022-03-09T08:40:18.490771179Z.",
+          "in" : "query",
+          "name" : "end_time",
+          "schema" : {
+            "format" : "date-time",
+            "type" : "string"
+          }
+        }, {
+          "description" : "Filter activity log entries by activity type. `workflow_runs` returns workflows triggered automatically and on-demand. `step_executions` returns single-step executions. `all` returns workflow runs, single-step executions, and events that didn't trigger a workflow.",
+          "in" : "query",
+          "name" : "activity_type",
+          "schema" : {
+            "default" : "all",
+            "enum" : [ "all", "workflow_runs", "step_executions" ],
+            "type" : "string"
+          }
+        }, {
+          "description" : "Filter activity log entries by a specific workflow (workflow ID).",
+          "in" : "query",
+          "name" : "workflow_id",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "The maximum number of log entries to retrieve per page. Default is 100. Maximum is 500.\nIf results exceed the defined page size, use [pagination](https://docs.torq.io/torq-api/pagination) to retrieve the next page",
+          "in" : "query",
+          "name" : "page_size",
+          "schema" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        }, {
+          "description" : "Token received from a previous `List activity logs` request. Provide this to retrieve the next page of results.",
+          "in" : "query",
+          "name" : "page_token",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/v1alphaListActivityLogsResponse"
+                }
+              }
+            },
+            "description" : "A successful response."
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object"
+                }
+              }
+            },
+            "description" : "Invalid bearer token. If you receive this message more than once try creating a new Client ID/Client Secret or generating a new bearer token."
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object"
+                }
+              }
+            },
+            "description" : "You don't have permission to access this resource."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/googlerpcStatus"
+                }
+              }
+            },
+            "description" : "An unexpected error response."
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ],
+        "summary" : "List activity logs",
+        "tags" : [ "ActivityLogs" ]
+      }
+    },
+    "/v1alpha/audit_logs" : {
+      "get" : {
+        "description" : "The audit log endpoint enables you to retrieve log entries from Torq. The logs are retrieved for the account on which the API key used for authenticating the request was created. Log entries are created for specific actions and resources.\nActions: create, update, and delete.\nResources: secrets and integrations.",
+        "operationId" : "listAuditLogs",
+        "parameters" : [ {
+          "description" : "Will retrieve log entries created after this [timestamp](https://docs.torq.io/torq-api/api-introduction#datetime). This parameter is optional. If empty, will retrieve all log entries from the previous 24 hours until the end timestamp. If neither a start or end timestamp is provided, will pull all log entries created in the last 24 hours. Timestamps are in RFC 3339 format, for example, 2022-03-09T08:40:18.490771179Z.",
+          "in" : "query",
+          "name" : "start_time",
+          "schema" : {
+            "format" : "date-time",
+            "type" : "string"
+          }
+        }, {
+          "description" : "Will retrieve log entries created before this [timestamp](https://docs.torq.io/torq-api/api-introduction#datetime). This parameter is optional. If empty, will retrieve all log entries from the start timestamp until now. If both the start or end timestamp are empty, will pull all log entries created in the last 24 hours. Timestamps are in RFC 3339 format, for example, 2022-03-09T08:40:18.490771179Z.",
+          "in" : "query",
+          "name" : "end_time",
+          "schema" : {
+            "format" : "date-time",
+            "type" : "string"
+          }
+        }, {
+          "description" : "The maximum number of log entries to retrieve per page. Default is 100. Maximum is 500.\nIf results exceed the defined page size, use [pagination](https://docs.torq.io/torq-api/pagination) to retrieve the next page",
+          "in" : "query",
+          "name" : "page_size",
+          "schema" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        }, {
+          "description" : "Token received from a previous List audit logs request. Provide this to retrieve the next page of results.",
+          "in" : "query",
+          "name" : "page_token",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/v1alphaListAuditLogsResponse"
+                }
+              }
+            },
+            "description" : "A successful response."
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object"
+                }
+              }
+            },
+            "description" : "Invalid bearer token. If you receive this message more than once try creating a new Client ID/Client Secret or generating a new bearer token."
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object"
+                }
+              }
+            },
+            "description" : "You don't have permission to access this resource."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/googlerpcStatus"
+                }
+              }
+            },
+            "description" : "An unexpected error response."
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ],
+        "summary" : "List audit logs",
+        "tags" : [ "AuditLogs" ]
+      }
+    },
+    "/v1alpha/secrets" : {
+      "get" : {
+        "description" : "Returns a list of all secrets on the account.",
+        "operationId" : "listSecrets",
+        "parameters" : [ {
+          "description" : "The maximum number of secrets to retrieve per page. Default is 50. Maximum is 100.\nIf results exceed the defined page size, use [pagination](https://docs.torq.io/torq-api/pagination) to retrieve the next page by making an identical `List secrets` request and providing the page token that was returned from the previous request.",
+          "in" : "query",
+          "name" : "page_size",
+          "schema" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        }, {
+          "description" : "A token returned from a previous `List secrets` request.\nProvide this to retrieve the next page of results.",
+          "in" : "query",
+          "name" : "page_token",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/v1alphaListSecretsResponse"
+                }
+              }
+            },
+            "description" : "A successful response."
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object"
+                }
+              }
+            },
+            "description" : "Invalid bearer token. If you receive this message more than once try creating a new Client ID/Client Secret or generating a new bearer token."
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object"
+                }
+              }
+            },
+            "description" : "You don't have permission to access this resource."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/googlerpcStatus"
+                }
+              }
+            },
+            "description" : "An unexpected error response."
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ],
+        "summary" : "List secrets",
+        "tags" : [ "Secrets" ]
+      },
+      "post" : {
+        "description" : "A [secret](https://docs.torq.io/how-to-guides/manage-torq-users) consists of a `name:value` pair. The name is the friendly name for the secret as it appears in the Torq UI. The value is the actual value of the secret. For example,\nif the secret is an API key, the name might be `api-key` and the value would be the actual API key.\nThe key can't be changed after the secret is created. The value can't be viewed after the secret is created, but it can be changed.",
+        "operationId" : "createSecret",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/v1alphaCreateSecretRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/v1alphaSecret"
+                }
+              }
+            },
+            "description" : "A successful response."
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object"
+                }
+              }
+            },
+            "description" : "Invalid bearer token. If you receive this message more than once try creating a new Client ID/Client Secret or generating a new bearer token."
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object"
+                }
+              }
+            },
+            "description" : "You don't have permission to access this resource."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/googlerpcStatus"
+                }
+              }
+            },
+            "description" : "An unexpected error response."
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ],
+        "summary" : "Create a secret",
+        "tags" : [ "Secrets" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/v1alpha/secrets/{id}" : {
+      "delete" : {
+        "description" : "Permanently deletes the provided secret. It cannot be undone and might create a breaking change if the secret is used in published workflows. To get a list of secret IDs make a `List secrets` request.",
+        "operationId" : "deleteSecret",
+        "parameters" : [ {
+          "description" : "The ID of the secret to delete.",
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object"
+                }
+              }
+            },
+            "description" : "A successful response."
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object"
+                }
+              }
+            },
+            "description" : "Invalid bearer token. If you receive this message more than once try creating a new Client ID/Client Secret or generating a new bearer token."
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object"
+                }
+              }
+            },
+            "description" : "You don't have permission to access this resource."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/googlerpcStatus"
+                }
+              }
+            },
+            "description" : "An unexpected error response."
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ],
+        "summary" : "Delete a secret",
+        "tags" : [ "Secrets" ]
+      },
+      "get" : {
+        "description" : "Returns the details of an existing secret by ID. To get a list of secret IDs make a `List secrets` request.",
+        "operationId" : "getSecret",
+        "parameters" : [ {
+          "description" : "ID\n\nThe ID of the secret to retrieve.",
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/v1alphaSecret"
+                }
+              }
+            },
+            "description" : "A successful response."
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object"
+                }
+              }
+            },
+            "description" : "Invalid bearer token. If you receive this message more than once try creating a new Client ID/Client Secret or generating a new bearer token."
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object"
+                }
+              }
+            },
+            "description" : "You don't have permission to access this resource."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/googlerpcStatus"
+                }
+              }
+            },
+            "description" : "An unexpected error response."
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ],
+        "summary" : "Retrieve a secret",
+        "tags" : [ "Secrets" ]
+      },
+      "patch" : {
+        "description" : "Allows you to change the name and/or value of an existing secret. To get a list of secret IDs make a `List secrets` request.",
+        "operationId" : "updateSecret",
+        "parameters" : [ {
+          "description" : "The ID of the secret to update. To get a list of secret IDs make a `List secrets` request.",
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/UpdateSecretRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/v1alphaSecret"
+                }
+              }
+            },
+            "description" : "A successful response."
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object"
+                }
+              }
+            },
+            "description" : "Invalid bearer token. If you receive this message more than once try creating a new Client ID/Client Secret or generating a new bearer token."
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object"
+                }
+              }
+            },
+            "description" : "You don't have permission to access this resource."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/googlerpcStatus"
+                }
+              }
+            },
+            "description" : "An unexpected error response."
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ],
+        "summary" : "Update a secret",
+        "tags" : [ "Secrets" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/v1alpha/users/invite" : {
+      "post" : {
+        "description" : "Invites a new user into the account",
+        "operationId" : "inviteUser",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/v1alphaInviteUserRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/v1alphaUser"
+                }
+              }
+            },
+            "description" : "A successful response."
+          },
+          "201" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object"
+                }
+              }
+            },
+            "description" : "User was invited successfully"
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object"
+                }
+              }
+            },
+            "description" : "Invalid bearer token. If you receive this message more than once try creating a new Client ID/Client Secret or generating a new bearer token."
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object"
+                }
+              }
+            },
+            "description" : "You don't have permission to access this resource."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/googlerpcStatus"
+                }
+              }
+            },
+            "description" : "An unexpected error response."
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ],
+        "summary" : "Invite a new user",
+        "tags" : [ "Users" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/v1alpha/users/roles" : {
+      "get" : {
+        "description" : "Returns a list of all roles for the account.",
+        "operationId" : "listRoles",
+        "parameters" : [ {
+          "description" : "The maximum number of roles to retrieve. Default is 50. Maximum is 100.\nIf results exceed the defined page size, use [pagination](https://docs.torq.io/torq-api/pagination) to retrieve the next page by making an identical `List roles` request and providing the page token that was returned from the previous request.",
+          "in" : "query",
+          "name" : "page_size",
+          "schema" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        }, {
+          "description" : "Token received from a previous `List roles` request.\nProvide this to retrieve the next page of results.",
+          "in" : "query",
+          "name" : "page_token",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/v1alphaListRolesResponse"
+                }
+              }
+            },
+            "description" : "A successful response."
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object"
+                }
+              }
+            },
+            "description" : "Invalid bearer token. If you receive this message more than once try creating a new Client ID/Client Secret or generating a new bearer token."
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object"
+                }
+              }
+            },
+            "description" : "You don't have permission to access this resource."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/googlerpcStatus"
+                }
+              }
+            },
+            "description" : "An unexpected error response."
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ],
+        "summary" : "List roles",
+        "tags" : [ "Users" ]
+      }
+    },
+    "/v1alpha/variables" : {
+      "get" : {
+        "description" : "Get a list of variable names",
+        "operationId" : "listVariables",
+        "parameters" : [ {
+          "description" : "The maximum number of variables to retrieve per page. Default is 50. Maximum is 100.\nIf results exceed the defined page size, use [pagination](https://docs.torq.io/torq-api/pagination) to retrieve the next page by making an identical `List variables` request and providing the page token that was returned from the previous request.",
+          "in" : "query",
+          "name" : "page_size",
+          "schema" : {
+            "format" : "int32",
+            "type" : "integer"
+          }
+        }, {
+          "description" : "A token returned from a previous `List variables` request.\nProvide this to retrieve the next page of results.",
+          "in" : "query",
+          "name" : "page_token",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/v1alphaListVariablesResponse"
+                }
+              }
+            },
+            "description" : "A successful response."
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object"
+                }
+              }
+            },
+            "description" : "Invalid bearer token. If you receive this message more than once try creating a new Client ID/Client Secret or generating a new bearer token."
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object"
+                }
+              }
+            },
+            "description" : "You don't have permission to access this resource."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/googlerpcStatus"
+                }
+              }
+            },
+            "description" : "An unexpected error response."
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ],
+        "summary" : "List variables",
+        "tags" : [ "Variables" ]
+      },
+      "post" : {
+        "description" : "Creates a variable that can be used in any workflow execution on the account where the variable was created.\nThe maximum size of the value is 1 MB.",
+        "operationId" : "CreateVariable",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/v1alphaCreateVariableRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/v1alphaVariable"
+                }
+              }
+            },
+            "description" : "A successful response."
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object"
+                }
+              }
+            },
+            "description" : "Invalid bearer token. If you receive this message more than once try creating a new Client ID/Client Secret or generating a new bearer token."
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object"
+                }
+              }
+            },
+            "description" : "You don't have permission to access this resource."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/googlerpcStatus"
+                }
+              }
+            },
+            "description" : "An unexpected error response."
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ],
+        "summary" : "Create a variable",
+        "tags" : [ "Variables" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/v1alpha/variables/{key}" : {
+      "delete" : {
+        "description" : "Permanently deletes the provided variable. It cannot be undone and might create a breaking change if the variable is used in published workflows. Pass the variable key as a path parameter.",
+        "operationId" : "deleteVariable",
+        "parameters" : [ {
+          "description" : "The name of the variable. We recommend providing a meaningful name that you'll be able to easily identify what it's used for. For example, `<workflow-name>-counter`",
+          "in" : "path",
+          "name" : "key",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object"
+                }
+              }
+            },
+            "description" : "A successful response."
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object"
+                }
+              }
+            },
+            "description" : "Invalid bearer token. If you receive this message more than once try creating a new Client ID/Client Secret or generating a new bearer token."
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object"
+                }
+              }
+            },
+            "description" : "You don't have permission to access this resource."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/googlerpcStatus"
+                }
+              }
+            },
+            "description" : "An unexpected error response."
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ],
+        "summary" : "Delete a variable",
+        "tags" : [ "Variables" ]
+      },
+      "get" : {
+        "description" : "Returns the key and value of the provided variable. Pass the variable key as a path parameter.",
+        "operationId" : "getVariable",
+        "parameters" : [ {
+          "description" : "The name of the variable. We recommend providing a meaningful name that you'll be able to easily identify what it's used for. For example, `<workflow-name>-counter`",
+          "in" : "path",
+          "name" : "key",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/v1alphaVariable"
+                }
+              }
+            },
+            "description" : "A successful response."
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object"
+                }
+              }
+            },
+            "description" : "Invalid bearer token. If you receive this message more than once try creating a new Client ID/Client Secret or generating a new bearer token."
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object"
+                }
+              }
+            },
+            "description" : "You don't have permission to access this resource."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/googlerpcStatus"
+                }
+              }
+            },
+            "description" : "An unexpected error response."
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ],
+        "summary" : "Retrieve a variable",
+        "tags" : [ "Variables" ]
+      },
+      "patch" : {
+        "description" : "Allows you to change the value of an existing variable. Pass the variable key as a path parameter. The value of the variable. The value can be a string (text enclosed in double quotes), a number (no quotes), an array (for example, [1,2,3]) or a JSON object (for example, \"{\\\"key\\\": \\\"value\\\",\\\"id\\\": 1}\").\nThe maximum size of the value is 1 MB.",
+        "operationId" : "updateVariable",
+        "parameters" : [ {
+          "description" : "The name of the variable. We recommend providing a meaningful name that you'll be able to easily identify what it's used for. For example, `<workflow-name>-counter`",
+          "in" : "path",
+          "name" : "key",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/updateVariable_request"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/v1alphaVariable"
+                }
+              }
+            },
+            "description" : "A successful response."
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object"
+                }
+              }
+            },
+            "description" : "Invalid bearer token. If you receive this message more than once try creating a new Client ID/Client Secret or generating a new bearer token."
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object"
+                }
+              }
+            },
+            "description" : "You don't have permission to access this resource."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/googlerpcStatus"
+                }
+              }
+            },
+            "description" : "An unexpected error response."
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ],
+        "summary" : "Update a variable",
+        "tags" : [ "Variables" ],
+        "x-codegen-request-body-name" : "body"
+      }
+    },
+    "/v1alpha/workflows/{workflow_id}/revision/{revision_id}" : {
+      "get" : {
+        "description" : "Returns the contents of a workflow revision in YAML format.",
+        "operationId" : "getWorkflowByRevision",
+        "parameters" : [ {
+          "description" : "Unique identifier of the workflow to retrieve. To get the `workflow_id` make a `List audit logs`, which will return a `resource_id`. This will be used as the `workflow_id`.",
+          "in" : "path",
+          "name" : "workflow_id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "description" : "Unique identifier of the workflow revision to retrieve. To get the `revision_id` make a `List audit logs` request.",
+          "in" : "path",
+          "name" : "revision_id",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/v1alphaWorkflowRevision"
+                }
+              }
+            },
+            "description" : "A successful response."
+          },
+          "401" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object"
+                }
+              }
+            },
+            "description" : "Invalid bearer token. If you receive this message more than once try creating a new Client ID/Client Secret or generating a new bearer token."
+          },
+          "403" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object"
+                }
+              }
+            },
+            "description" : "You don't have permission to access this resource."
+          },
+          "default" : {
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/googlerpcStatus"
+                }
+              }
+            },
+            "description" : "An unexpected error response."
+          }
+        },
+        "security" : [ {
+          "bearerAuth" : [ ]
+        } ],
+        "summary" : "Retrieve a workflow revision",
+        "tags" : [ "Workflows" ]
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "TypeOnDemandSource" : {
+        "default" : "source_unknown",
+        "enum" : [ "source_unknown", "web_app", "slack" ],
+        "title" : "- web_app: The execution triggered from the web app\n - slack: The execution triggered from slack",
+        "type" : "string"
+      },
+      "googlerpcStatus" : {
+        "properties" : {
+          "code" : {
+            "format" : "int32",
+            "type" : "integer"
+          },
+          "message" : {
+            "type" : "string"
+          },
+          "details" : {
+            "items" : {
+              "$ref" : "#/components/schemas/protobufAny"
+            },
+            "type" : "array"
+          }
+        },
+        "type" : "object"
+      },
+      "protobufAny" : {
+        "additionalProperties" : {
+          "type" : "object"
+        },
+        "properties" : {
+          "@type" : {
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "protobufNullValue" : {
+        "default" : "NULL_VALUE",
+        "description" : "`NullValue` is a singleton enumeration to represent the null value for the\n`Value` type union.\n\n The JSON representation for `NullValue` is JSON `null`.\n\n - NULL_VALUE: Null value.",
+        "enum" : [ "NULL_VALUE" ],
+        "type" : "string"
+      },
+      "v1alphaActivity" : {
+        "description" : "Activity",
+        "properties" : {
+          "id" : {
+            "description" : "Unique identifier of the log entry.",
+            "title" : "ID",
+            "type" : "string"
+          },
+          "account_id" : {
+            "description" : "Unique identifier of the account where the activity was performed.",
+            "title" : "Account ID",
+            "type" : "string"
+          },
+          "event" : {
+            "$ref" : "#/components/schemas/v1alphaEvent"
+          },
+          "execution" : {
+            "$ref" : "#/components/schemas/v1alphaExecution"
+          }
+        },
+        "title" : "Activity",
+        "type" : "object"
+      },
+      "v1alphaActivityType" : {
+        "default" : "all",
+        "enum" : [ "all", "workflow_runs", "step_executions" ],
+        "type" : "string"
+      },
+      "v1alphaAuditLog" : {
+        "properties" : {
+          "id" : {
+            "description" : "Unique identifier of the log entry.",
+            "format" : "uuid",
+            "readOnly" : true,
+            "title" : "ID",
+            "type" : "string"
+          },
+          "timestamp" : {
+            "description" : "The timestamp when the action that created the log entry was performed. For example, if a secret was deleted, it's the timestamp when the secret was was deleted.",
+            "format" : "date-time",
+            "title" : "Timestamp",
+            "type" : "string"
+          },
+          "email" : {
+            "description" : "The email address of the actor that performed the action that created the log entry. If actor type is \"web_app\", it's the authenticated user's email address. If the actor type is api_key, it's the email address of the user that generated the API key.",
+            "format" : "email",
+            "title" : "Email",
+            "type" : "string"
+          },
+          "actor_name" : {
+            "description" : "The name of the actor that performed the action that created the log entry. Can be the user name or the API key name.",
+            "title" : "Actor name",
+            "type" : "string"
+          },
+          "actor_type" : {
+            "description" : "The type of actor that performed the action that created the log entry. Can be \"web_app\", \"api_key\", or \"slack\".",
+            "title" : "Actor type",
+            "type" : "string"
+          },
+          "action" : {
+            "description" : "The action that created the log entry. For example: \"Integration created\".",
+            "title" : "Action",
+            "type" : "string"
+          },
+          "resource_id" : {
+            "description" : "Unique identifier of the resource on which the action was taken.",
+            "format" : "uuid",
+            "title" : "Resource ID",
+            "type" : "string"
+          },
+          "resource_name" : {
+            "description" : "The name of the resource on which the action was taken. For example, if a secret was deleted, this would be the name of the secret that was deleted.",
+            "title" : "Resource name",
+            "type" : "string"
+          },
+          "ip" : {
+            "description" : "The IP address of the actor, either a public IPv4 or IPv6 address.",
+            "title" : "IP",
+            "type" : "string"
+          },
+          "user_agent" : {
+            "description" : "The data that the browser sends in the User-Agent header in the HTTP request. This information is not authenticated and should be treated accordingly.",
+            "title" : "User-Agent",
+            "type" : "string"
+          },
+          "extra_data" : {
+            "description" : "Additional data relevant to the action performed. Workflows will include the revision id, users will include the user's role.",
+            "properties" : { },
+            "title" : "Extra Data",
+            "type" : "object"
+          },
+          "account_id" : {
+            "description" : "Unique identifier of the account where the action was performed.",
+            "title" : "Account ID",
+            "type" : "string"
+          },
+          "account_name" : {
+            "description" : "The name of the account where the action was performed.",
+            "title" : "Account Name",
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "v1alphaCreateSecretRequest" : {
+        "properties" : {
+          "display_name" : {
+            "description" : "The name of the secret as it appears in the Torq UI. We recommend providing a meaningful name that you'll be able to easily identify what it's used for. For example, `<vendor_name>-api-key`.",
+            "example" : "My AWS Key",
+            "title" : "Display Name",
+            "type" : "string"
+          },
+          "value" : {
+            "description" : "The value of the secret. For example, if the secret is an API key, the value would be the actual API key.",
+            "example" : "NXmvebNEk57VVUBXlm7m",
+            "title" : "Value",
+            "type" : "string"
+          }
+        },
+        "required" : [ "display_name", "value" ],
+        "title" : "CreateSecretRequest",
+        "type" : "object"
+      },
+      "v1alphaCreateVariableRequest" : {
+        "properties" : {
+          "key" : {
+            "example" : "auth-workflow-counter",
+            "title" : "The name of the variable. We recommend providing a meaningful name that you'll be able to easily identify what it's used for. For example, `<workflow-name>-counter`",
+            "type" : "string"
+          },
+          "value" : {
+            "description" : "The value of the variable. The value can be a string (text enclosed in double quotes), a number (no quotes), an array (for example, [1,2,3]) or a JSON object (for example, \"{\\\"key\\\": \\\"value\\\",\\\"id\\\": 1}\").\nThe maximum size of the value is 1 MB.",
+            "example" : {
+              "key" : "value",
+              "id" : 1
+            },
+            "properties" : { },
+            "title" : "Value",
+            "type" : "object"
+          },
+          "expires_in" : {
+            "example" : "",
+            "type" : "string"
+          }
+        },
+        "required" : [ "key", "value" ],
+        "title" : "CreateRequest",
+        "type" : "object"
+      },
+      "v1alphaEvent" : {
+        "description" : "The event object contains information about the event that created the activity log entry.",
+        "properties" : {
+          "id" : {
+            "description" : "Unique identifer of the event.",
+            "title" : "ID",
+            "type" : "string"
+          },
+          "timestamp" : {
+            "description" : "The timestamp when the event that created the log entry was received.",
+            "format" : "date-time",
+            "title" : "Timestamp",
+            "type" : "string"
+          },
+          "pretty_id" : {
+            "description" : "Unique identifier of the event as it appears in the UI. For example, `AA-123456`.",
+            "title" : "Pretty ID",
+            "type" : "string"
+          },
+          "body" : {
+            "description" : "The body of the event. Content will vary depending on the event `type`.",
+            "title" : "Body",
+            "type" : "string"
+          },
+          "type" : {
+            "$ref" : "#/components/schemas/v1alphaEventType"
+          },
+          "integration" : {
+            "$ref" : "#/components/schemas/v1alphaTypeIntegration"
+          },
+          "on_demand" : {
+            "$ref" : "#/components/schemas/v1alphaTypeOnDemand"
+          },
+          "nested" : {
+            "$ref" : "#/components/schemas/v1alphaTypeNested"
+          },
+          "single_step" : {
+            "$ref" : "#/components/schemas/v1alphaTypeSingleStep"
+          }
+        },
+        "title" : "Event",
+        "type" : "object"
+      },
+      "v1alphaEventType" : {
+        "default" : "event_type_unknown",
+        "description" : "The event type that created the log entry. The type determines which object will be returned (`integration`, `on_demand`, `nested`, or `single_step`.",
+        "enum" : [ "event_type_unknown", "integration", "on_demand", "nested", "single_step" ],
+        "title" : "EventType",
+        "type" : "string"
+      },
+      "v1alphaExecution" : {
+        "description" : "The execution object contains information about the workflow execution, if one was triggered.",
+        "properties" : {
+          "id" : {
+            "description" : "Unique identifier of the workflow execution.",
+            "title" : "ID",
+            "type" : "string"
+          },
+          "workflow_id" : {
+            "description" : "Unique identifier of the triggered workflow.",
+            "title" : "Workflow ID",
+            "type" : "string"
+          },
+          "workflow_name" : {
+            "description" : "The name of the triggered workflow.",
+            "title" : "Workflow Name",
+            "type" : "string"
+          },
+          "status" : {
+            "$ref" : "#/components/schemas/v1alphaExecutionStatus"
+          },
+          "current_step" : {
+            "$ref" : "#/components/schemas/v1alphaStep"
+          },
+          "started_at" : {
+            "description" : "The timestamp when the execution started.",
+            "format" : "date-time",
+            "title" : "Started at",
+            "type" : "string"
+          },
+          "updated_at" : {
+            "description" : "The timestamp when the execution was last updated.",
+            "format" : "date-time",
+            "title" : "Updated at",
+            "type" : "string"
+          }
+        },
+        "title" : "Execution",
+        "type" : "object"
+      },
+      "v1alphaExecutionStatus" : {
+        "default" : "execution_status_unknown",
+        "enum" : [ "execution_status_unknown", "success", "failed", "running", "stopped", "on_hold" ],
+        "type" : "string"
+      },
+      "v1alphaInviteUserRequest" : {
+        "description" : "Invite a new user model",
+        "properties" : {
+          "email" : {
+            "description" : "Email address of the user to invite.",
+            "format" : "email",
+            "title" : "Email",
+            "type" : "string"
+          },
+          "role_id" : {
+            "description" : "ID of the role to assign to the invited user. If no role ID is provided, Viewer role is assigned.\nTo get a list of role IDs, make a `List roles` request.",
+            "format" : "uuid",
+            "title" : "User role",
+            "type" : "string"
+          }
+        },
+        "required" : [ "email" ],
+        "title" : "InviteUserRequest",
+        "type" : "object"
+      },
+      "v1alphaListActivityLogsResponse" : {
+        "properties" : {
+          "activity_logs" : {
+            "description" : "An array of activity log entry objects.",
+            "items" : {
+              "$ref" : "#/components/schemas/v1alphaActivity"
+            },
+            "title" : "Activity logs",
+            "type" : "array"
+          },
+          "next_page_token" : {
+            "description" : "When a token is returned it indicates there is another page of results to retrieve. Pass this token in the pageToken parameter in a subsequent List activity logs request to retrieve the next page of results. If this field is empty, there are no additional pages to retrieve.",
+            "title" : "Next page token",
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "v1alphaListAuditLogsResponse" : {
+        "properties" : {
+          "audit_logs" : {
+            "description" : "An array of audit log objects.",
+            "items" : {
+              "$ref" : "#/components/schemas/v1alphaAuditLog"
+            },
+            "title" : "Audit logs",
+            "type" : "array"
+          },
+          "next_page_token" : {
+            "description" : "When a token is returned it indicates there is another page of results to retrieve. Pass this token in the pageToken parameter in a subsequent List audit logs request to retrieve the next page of results. If this field is empty, there are no additional pages to retrieve.",
+            "title" : "Next page token",
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "v1alphaListRolesResponse" : {
+        "description" : "List roles model",
+        "properties" : {
+          "roles" : {
+            "items" : {
+              "$ref" : "#/components/schemas/v1alphaRole"
+            },
+            "title" : "roles represents the roles",
+            "type" : "array"
+          },
+          "next_page_token" : {
+            "description" : "When a token is returned it indicates there is another page of results to retrieve. Pass this token in the `pageToken` parameter in a subsequent `List roles` request to retrieve the next page of results.\nIf this field is empty, there are no additional pages to retrieve.",
+            "type" : "string"
+          }
+        },
+        "title" : "ListRolesResponse",
+        "type" : "object"
+      },
+      "v1alphaListSecretsResponse" : {
+        "properties" : {
+          "secrets" : {
+            "description" : "An array of secret objects.",
+            "items" : {
+              "$ref" : "#/components/schemas/v1alphaSecret"
+            },
+            "title" : "Secrets",
+            "type" : "array"
+          },
+          "next_page_token" : {
+            "description" : "When a token is returned it indicates there is another page of results to retrieve. Pass this token in the `page_token` parameter in a subsequent `List secrets` request to retrieve the next page of results.\nIf this field is empty, there are no additional pages to retrieve.",
+            "nullable" : true,
+            "title" : "Next Page Token",
+            "type" : "string"
+          }
+        },
+        "title" : "ListSecretsResponse",
+        "type" : "object"
+      },
+      "v1alphaListVariablesResponse" : {
+        "properties" : {
+          "keys" : {
+            "description" : "An array of variable names.",
+            "items" : {
+              "type" : "string"
+            },
+            "title" : "Key names",
+            "type" : "array"
+          },
+          "next_page_token" : {
+            "description" : "When a token is returned it indicates there is another page of results to retrieve. Pass this token in the `page_token` parameter in a subsequent `List variables` request to retrieve the next page of results.\nIf this field is empty, there are no additional pages to retrieve.",
+            "title" : "Next Page Token",
+            "type" : "string"
+          }
+        },
+        "title" : "ListVariablesResponse",
+        "type" : "object"
+      },
+      "v1alphaRole" : {
+        "description" : "Role object",
+        "properties" : {
+          "id" : {
+            "description" : "Unique identifier for the role.",
+            "format" : "uuid",
+            "readOnly" : true,
+            "type" : "string"
+          },
+          "name" : {
+            "description" : "Name of the role.",
+            "type" : "string"
+          },
+          "description" : {
+            "description" : "Description of the role.",
+            "type" : "string"
+          },
+          "scope_names" : {
+            "description" : "Scopes are the permissions granted to this role.",
+            "items" : {
+              "type" : "string"
+            },
+            "type" : "array"
+          }
+        },
+        "title" : "Role",
+        "type" : "object"
+      },
+      "v1alphaSecret" : {
+        "properties" : {
+          "id" : {
+            "description" : "Unique identifier for the secret.",
+            "format" : "uuid",
+            "readOnly" : true,
+            "title" : "ID",
+            "type" : "string"
+          },
+          "display_name" : {
+            "description" : "The name of the secret as it appears in the Torq UI.",
+            "example" : "My AWS Key",
+            "title" : "Display Name",
+            "type" : "string"
+          },
+          "key" : {
+            "description" : "The key by which the secret will be referenced in the Workflows.\nThis value is generated from display name during creation",
+            "example" : "my-aws-key",
+            "title" : "Key",
+            "type" : "string"
+          },
+          "created_time" : {
+            "description" : "The timestamp when the secret was created.",
+            "format" : "date-time",
+            "readOnly" : true,
+            "title" : "Created Time",
+            "type" : "string"
+          },
+          "updated_time" : {
+            "description" : "The timestamp when the secret was last updated.",
+            "format" : "date-time",
+            "readOnly" : true,
+            "title" : "Update time",
+            "type" : "string"
+          }
+        },
+        "required" : [ "display_name" ],
+        "title" : "Secret",
+        "type" : "object"
+      },
+      "v1alphaStep" : {
+        "properties" : {
+          "name" : {
+            "description" : "The name of the last executed step in the workflow.",
+            "title" : "Name",
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "v1alphaTypeIntegration" : {
+        "description" : "The integration object is included in the response when the event `type` is `integration`.",
+        "properties" : {
+          "integration_id" : {
+            "description" : "The ID of the integration that sent the event.",
+            "title" : "Integration ID",
+            "type" : "string"
+          },
+          "integration_name" : {
+            "description" : "The name of the integration that triggered the workflow.",
+            "title" : "Integration Name",
+            "type" : "string"
+          },
+          "integration_type" : {
+            "description" : "The type of the integration that triggered the workflow. Can be `schedule_event` or a vendor name.",
+            "title" : "Integration Type",
+            "type" : "string"
+          },
+          "executed_by" : {
+            "description" : "The email address of the user that sent the event, available if the event was a test event.",
+            "title" : "Executed by",
+            "type" : "string"
+          }
+        },
+        "title" : "Integration",
+        "type" : "object"
+      },
+      "v1alphaTypeNested" : {
+        "description" : "Nested workflows are triggered from within a workflow, known as the parent workflow. The `nested` objection contains information about the parent workflow and is returned when the event `type` is `nested`.",
+        "properties" : {
+          "parent_workflow_id" : {
+            "description" : "Unique identifier of the parent workflow.",
+            "title" : "Parent Workflow ID",
+            "type" : "string"
+          },
+          "parent_workflow_name" : {
+            "description" : "The name of the parent workflow.",
+            "title" : "Parent workflow name",
+            "type" : "string"
+          },
+          "parent_execution_id" : {
+            "description" : "The execution ID of the parent workflow.",
+            "title" : "Parent execution ID",
+            "type" : "string"
+          }
+        },
+        "title" : "Nested",
+        "type" : "object"
+      },
+      "v1alphaTypeOnDemand" : {
+        "description" : "Workflows with an on-demand trigger can be executed from the designer, Slack, or other applications. The `on-demand` object contains information about the user and the source that triggered the workflow and is returned when the event `type` is `on_demand`.",
+        "properties" : {
+          "executed_by" : {
+            "description" : "The email address of the user that executed the workflow.",
+            "title" : "Executed by",
+            "type" : "string"
+          },
+          "source" : {
+            "$ref" : "#/components/schemas/TypeOnDemandSource"
+          }
+        },
+        "title" : "On Demand",
+        "type" : "object"
+      },
+      "v1alphaTypeSingleStep" : {
+        "description" : "Single steps are executed by a user in the designer. The `single-step` object contains information about the user that executed the step and is returned when the event `type` is `single_step`.",
+        "properties" : {
+          "executed_by" : {
+            "description" : "The email address of the user that executed the step.",
+            "title" : "Executed by",
+            "type" : "string"
+          }
+        },
+        "title" : "Single Step",
+        "type" : "object"
+      },
+      "v1alphaURL" : {
+        "properties" : {
+          "url" : {
+            "type" : "string"
+          },
+          "relative_path" : {
+            "type" : "string"
+          }
+        },
+        "type" : "object"
+      },
+      "v1alphaUser" : {
+        "description" : "The user object",
+        "properties" : {
+          "id" : {
+            "description" : "Unique identifier for the invited user.",
+            "format" : "uuid",
+            "readOnly" : true,
+            "title" : "Unique ID",
+            "type" : "string"
+          },
+          "email" : {
+            "description" : "Email address of the invited user.",
+            "format" : "email",
+            "title" : "User email",
+            "type" : "string"
+          },
+          "role_id" : {
+            "description" : "Unique identifier for the role assigned to the invited user.",
+            "format" : "uuid",
+            "title" : "User role",
+            "type" : "string"
+          },
+          "status" : {
+            "$ref" : "#/components/schemas/v1alphaUserStatus"
+          },
+          "sso_provision" : {
+            "description" : "If `true`, the user was provisioned in Torq with your SSO IdP.",
+            "example" : false,
+            "readOnly" : true,
+            "title" : "Is this an SSO user?",
+            "type" : "boolean"
+          },
+          "created_time" : {
+            "description" : "The timestamp when the user was created.",
+            "format" : "date-time",
+            "readOnly" : true,
+            "title" : "When the account was created",
+            "type" : "string"
+          },
+          "last_login_time" : {
+            "description" : "The timestamp when the user last logged in to Torq via the UI or the API.",
+            "format" : "date-time",
+            "readOnly" : true,
+            "title" : "When the user last logged on interractively or using API",
+            "type" : "string"
+          }
+        },
+        "title" : "User",
+        "type" : "object"
+      },
+      "v1alphaUserStatus" : {
+        "default" : "STATUS_UNSPECIFIED",
+        "enum" : [ "STATUS_UNSPECIFIED", "INVITATION_SENT", "VERIFIED" ],
+        "title" : "- STATUS_UNSPECIFIED: Default value. This value is unused.\n - INVITATION_SENT: Invitation email has been sent\n - VERIFIED: Membership verified",
+        "type" : "string"
+      },
+      "v1alphaVariable" : {
+        "properties" : {
+          "key" : {
+            "title" : "key - key/name of the variable",
+            "type" : "string"
+          },
+          "value" : {
+            "properties" : { },
+            "title" : "value - variable value",
+            "type" : "object"
+          },
+          "expires_at" : {
+            "description" : "The timestamp when the variable expires.",
+            "format" : "date-time",
+            "type" : "string"
+          }
+        },
+        "title" : "Variable object",
+        "type" : "object"
+      },
+      "v1alphaWorkflowRevision" : {
+        "properties" : {
+          "id" : {
+            "description" : "Unique identifier of the workflow revision.",
+            "format" : "uuid",
+            "readOnly" : true,
+            "title" : "ID",
+            "type" : "string"
+          },
+          "yaml" : {
+            "description" : "The contents of the workflow revision, in YAML format.",
+            "title" : "YAML",
+            "type" : "string"
+          },
+          "created_time" : {
+            "description" : "The timestamp when the revision was created.",
+            "format" : "date-time",
+            "readOnly" : true,
+            "title" : "Created Time",
+            "type" : "string"
+          },
+          "modified_by" : {
+            "description" : "The email address of the user that created the revision.",
+            "example" : "user@company.com",
+            "title" : "Modified by",
+            "type" : "string"
+          }
+        },
+        "required" : [ "yaml" ],
+        "type" : "object"
+      },
+      "UpdateSecretRequest" : {
+        "properties" : {
+          "value" : {
+            "description" : "New value for the secret.",
+            "example" : "My-Secret-Value",
+            "title" : "Value",
+            "type" : "string"
+          }
+        },
+        "required" : [ "value" ],
+        "title" : "UpdateSecretRequest",
+        "type" : "object"
+      },
+      "updateVariable_request" : {
+        "properties" : {
+          "value" : {
+            "description" : "The value of the variable. The value can be a string (text enclosed in double quotes), a number (no quotes), an array (for example, [1,2,3]) or a JSON object (for example, \"{\\\"key\\\": \\\"value\\\",\\\"id\\\": 1}\").\nThe maximum size of the value is 1 MB.",
+            "example" : {
+              "value" : 1
+            },
+            "properties" : { },
+            "title" : "Value",
+            "type" : "object"
+          },
+          "expires_in" : {
+            "description" : "The period of time until the variable is deleted. Supported format is numbers and time units - \"h\" for hours, \"m\" for minutes and \"s\" for seconds. For example: \"1.5h\" or \"2h45m\".\nWhen expires_in is set for a variable it cannot be removed.",
+            "example" : "",
+            "title" : "Expires In",
+            "type" : "string"
+          },
+          "append" : {
+            "description" : "Appends the provided value to the existing value of the provided variable. Append is supported for JSON objects and strings. In case of a duplicate key in the JSON object, the value of the JSON you are appending will overwrite the existing value of the duplicate key.",
+            "title" : "Append",
+            "type" : "boolean"
+          }
+        },
+        "required" : [ "value" ],
+        "type" : "object"
+      }
+    },
+    "securitySchemes" : {
+      "bearerAuth" : {
+        "in" : "header",
+        "name" : "Authorization",
+        "type" : "apiKey"
+      }
+    }
+  },
+  "x-original-swagger-version" : "2.0"
+}

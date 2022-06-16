@@ -4,10 +4,10 @@ The table below lists the functions by group, providing a brief description of t
 
 ## String functions
 
-| Function | Descriptions |  
+| **Function** | **Descriptions** |
+| -------- | ------------ |
 | trim | Trims leading and trailing spaces. |
 | trimAll | Trims leading and trailing occurrences or a nominated character. |
-| -------- | ------------ |
 | -------- | ------------ |
 | -------- | ------------ |
 | -------- | ------------ |

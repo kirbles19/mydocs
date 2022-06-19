@@ -7,4 +7,4 @@ Activity log entries are created when for following activities:
 - Single-step executions
 - Events that didn't trigger a workflow.
 
-[link](https://storage.googleapis.com/stackpulse-public/pagerduty_steps_config.png)
+![link](https://storage.googleapis.com/stackpulse-public/pagerduty_steps_config.png)
